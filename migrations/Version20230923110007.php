@@ -42,13 +42,14 @@ final class Version20230923110007 extends AbstractMigration
         $this->addSql('CREATE TABLE users 
         (
         id INT AUTO_INCREMENT NOT NULL, 
-        full_name VARCHAR(255) NOT NULL, 
+        full_name VARCHAR(255) NULL, 
         password VARCHAR(255) NOT NULL, 
         email VARCHAR(180) NOT NULL,
-        username VARCHAR(180) NOT NULL,
+        username VARCHAR(180) NULL,
+        zone_id INT NOT NULL,
         created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', 
-        roles LONGTEXT NOT NULL COMMENT \'(DC2Type:json)\',
-        UNIQUE INDEX unique_email (email), UNIQUE INDEX unique_username (username), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'
+        roles LONGTEXT NULL COMMENT \'(DC2Type:json)\',
+        INDEX IDX_D212210CA76ED399 (zone_id), UNIQUE INDEX unique_email (email), UNIQUE INDEX unique_username (username), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'
         );
         $this->addSql('CREATE TABLE zones 
         (
@@ -60,6 +61,7 @@ final class Version20230923110007 extends AbstractMigration
 
         $this->addSql('ALTER TABLE user_jobs ADD CONSTRAINT FK_D212210CA76ED395 FOREIGN KEY (user_id) REFERENCES users (id)');
         $this->addSql('ALTER TABLE user_jobs ADD CONSTRAINT FK_D212210CBE04EA9 FOREIGN KEY (job_id) REFERENCES jobs (id)');
+        $this->addSql('ALTER TABLE users ADD CONSTRAINT FK_D212210CBE04EA1 FOREIGN KEY (zone_id) REFERENCES zones (id)');
     }
 
     public function down(Schema $schema): void
@@ -67,6 +69,7 @@ final class Version20230923110007 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE user_jobs DROP FOREIGN KEY FK_D212210CA76ED395');
         $this->addSql('ALTER TABLE user_jobs DROP FOREIGN KEY FK_D212210CBE04EA9');
+        $this->addSql('ALTER TABLE users DROP FOREIGN KEY FK_D212210CBE04EA1');
         $this->addSql('DROP TABLE jobs');
         $this->addSql('DROP TABLE user_jobs');
         $this->addSql('DROP TABLE users');

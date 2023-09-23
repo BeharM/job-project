@@ -34,8 +34,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'zone',targetEntity: Zone::class)]
-    private ?int $zone = null;
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    private Zone $zone;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -144,7 +144,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getZone(): ?int
+    public function getZone(): Zone
     {
         return $this->zone;
     }

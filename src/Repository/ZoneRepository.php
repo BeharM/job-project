@@ -21,6 +21,10 @@ class ZoneRepository extends ServiceEntityRepository
         parent::__construct($registry, Zone::class);
     }
 
+    public function getDefaultZone(){
+        return $this->find(1);
+    }
+
 //    /**
 //     * @return Zone[] Returns an array of Zone objects
 //     */
