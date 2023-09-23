@@ -18,7 +18,7 @@ class UserJob
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?int $user = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: Job::class)]
     private ?int $job = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
