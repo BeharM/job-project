@@ -34,13 +34,15 @@ class RegistrationController extends AbstractController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
-     *             mediaType="application/json",
+     *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
      *                 type="object",
      *                 @OA\Property(property="email", type="string", description="User's email address", example="user@example.com"),
      *                 @OA\Property(property="password", type="string", description="User's password", example="password123"),
      *                 @OA\Property(property="username", type="string", description="User's username", example="username123", nullable=true),
      *                 @OA\Property(property="fullName", type="string", description="User's full name", example="John Doe", nullable=true),
+     *                 @OA\Property(property="zone", type="string", description="Select an zone(key) from api/zones data", example="UK", nullable=false),
+     *                 @OA\Property(property="role", type="string", description="Select an role(key) from api/roles data", example="Auditor", nullable=true),
      *             )
      *         )
      *     ),

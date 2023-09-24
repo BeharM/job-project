@@ -57,7 +57,7 @@ class JobController extends AbstractController
      *         description="Job ID",
      *         required=true,
      *         @OA\Schema(
-     *            type="int",
+     *            type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -104,15 +104,15 @@ class JobController extends AbstractController
      *
      * @OA\Post(
      *     summary="Register a new job",
-     *     tags={"Store Job"},
+     *     tags={"Job Management"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
-     *             mediaType="application/json",
+     *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
      *                 type="object",
-     *                 @OA\Property(property="title", type="string", description="Job Titile"),
-     *                 @OA\Property(property="description", type="string", description="Job Description", nullable=true),
+     *                 @OA\Property(property="title", type="string", example="Symfony Tasks", description="Job Titile"),
+     *                 @OA\Property(property="description", type="string", example="Api Job CRUD", description="Job Description", nullable=true),
      *             )
      *         )
      *     ),
@@ -181,25 +181,29 @@ class JobController extends AbstractController
     }
 
     /**
-     * Assign user to a company.
+     * Assign user to a job.
      *
      * @OA\Post(
      *     summary="Assign job to a user",
-     *     tags={"Job Management"},
+     *     tags={"Schedule Job"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Job Id",
+     *         description="Job ID",
      *         required=true,
      *         @OA\Schema(
-     *            type="int",
-     *        )
+     *            type="integer",
+     *         )
      *     ),
-     *     @OA\Parameter(
-     *         name="scheduled_at",
-     *         in="path",
-     *         description="Assignment timestamp (e.g., 2023/09/25 15:30:00)",
-     *         required=true
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(property="scheduled_at", type="string", example="2023/09/25 15:30:00", description="Assignment timestamp", nullable=false),
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -296,24 +300,25 @@ class JobController extends AbstractController
      *
      * @OA\Put(
      *     summary="Mark a job as completed",
-     *     tags={"JOb Management"},
+     *     tags={"Schedule Job"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Job Id",
+     *         description="Job ID",
      *         required=true,
      *         @OA\Schema(
-     *            type="int",
-     *        )
+     *            type="integer",
+     *         )
      *     ),
-     *     @OA\Parameter(
-     *         name="assessment",
-     *         in="path",
-     *         description="Job Assessment",
+     *     @OA\RequestBody(
      *         required=true,
-     *         @OA\Schema(
-     *            type="text",
-     *        )
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(property="assessment", type="text", example="Task Code or Description", description="Job Assessment", nullable=false),
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -348,7 +353,7 @@ class JobController extends AbstractController
             try {
                 if ($job = $jobRepository->find($id)) {
                     if (!$userJob = $userJobRepository->belongsJobToUser($id, $currentUser->getId())){
-                        $error ='Error! Job belongs to another auditor!!!';
+                        $error ='Error! You can not update this job, does not belong to you!';
                     }else {
                         $userJob->setAssessment($request->get('assessment'));
                         $userJob->setStatus(1);
