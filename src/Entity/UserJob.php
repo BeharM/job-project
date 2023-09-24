@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserJobRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserJobRepository::class)]
 #[ORM\Table(name: 'user_jobs')]
@@ -16,13 +17,20 @@ class UserJob
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private ?int $user = null;
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Job::class)]
-    private ?int $job = null;
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private ?Job $job = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $status = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $scheduled_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -42,7 +50,7 @@ class UserJob
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -54,7 +62,7 @@ class UserJob
         return $this;
     }
 
-    public function getJob(): ?int
+    public function getJob(): ?Job
     {
         return $this->job;
     }
@@ -74,6 +82,18 @@ class UserJob
     public function setStatus(?int $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getScheduledAt(): ?\DateTimeImmutable
+    {
+        return $this->scheduled_at;
+    }
+
+    public function setScheduledAt(\DateTimeImmutable $scheduledAt): static
+    {
+        $this->scheduled_at = $scheduledAt;
 
         return $this;
     }

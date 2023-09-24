@@ -21,28 +21,15 @@ class UserJobRepository extends ServiceEntityRepository
         parent::__construct($registry, UserJob::class);
     }
 
-//    /**
-//     * @return UserJob[] Returns an array of UserJob objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?UserJob
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function belongsJobToUser($jobId, $userId){
+        return $this->createQueryBuilder('user_job')
+            ->where('user_job.job = :jobId')
+            ->andWhere('user_job.user = :userId')
+            ->setParameters(['jobId' => $jobId, 'userId' => $userId])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

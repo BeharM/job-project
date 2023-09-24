@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
@@ -18,14 +19,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
-    #[ORM\Column(name:'full_name', length: 255, nullable: false)]
-    private ?string $fullName;
+    #[ORM\Column(name:'full_name', length: 255, nullable: true)]
+    private ?string $fullName = null;
 
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private ?string $password;
 
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[ORM\Column(type: 'string', length: 180, unique: true, nullable: false)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     private ?string $email;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
@@ -34,8 +42,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne(targetEntity: Zone::class)]
-    private Zone $zone;
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[ORM\Column(name:'zone', length: 255, nullable: false)]
+    private string $zone;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -144,12 +154,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getZone(): Zone
+    public function getZone(): string
     {
         return $this->zone;
     }
 
-    public function setZone(?Zone $zone): static
+    public function setZone(string $zone): static
     {
         $this->zone = $zone;
 

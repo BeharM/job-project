@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Job;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Job>
@@ -16,33 +18,48 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class JobRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private  $entityManager;
+    private  $validator;
+    public  $errorResponse = false;
+    public function __construct(ValidatorInterface $validator, ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Job::class);
+        $this->entityManager = $entityManager;
+        $this->validator = $validator;
     }
 
-//    /**
-//     * @return Job[] Returns an array of Job objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('j')
-//            ->andWhere('j.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('j.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Store new job
+     */
+    public function store($request){
+        $job = new Job();
+        $job->setTitle($request->get('title'));
+        $job->setDescription($request->get('description'));
+        $job->setCreatedAt(new \DateTimeImmutable('now'));
+        try {
+            $errors =  $this->validator->validate($job);
+            if (count($errors) > 0) {
+                $errorsString = (string) $errors;
+                $this->errorResponse = $errorsString;
+                return false;
+            }
+            $this->entityManager->persist($job);
+            $this->entityManager->flush();
+            return $job;
+        }catch (\Exception $e){
+            return false;
+        }
+    }
 
-//    public function findOneBySomeField($value): ?Job
-//    {
-//        return $this->createQueryBuilder('j')
-//            ->andWhere('j.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function isJobAssigned($jobId){
+        return $this->createQueryBuilder('j')
+            ->innerJoin('App\Entity\UserJob', 'uJ', 'WITH', 'uJ.job = j.id')
+            ->andWhere('j.id = :jobId')
+            ->setParameter('jobId', $jobId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
