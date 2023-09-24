@@ -6,6 +6,7 @@ use App\Service\Helper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 #[Route('/api', name: 'api_')]
@@ -18,14 +19,12 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Route("/zones", methods={"GET"})
-     *
      * @OA\Response(
      *     response=200,
-     *     description="List of Avaliable Zones, used to register new user",
+     *     description="List of Available Zones",
      * )
      */
-    #[Route('/zones', name: 'zones')]
+    #[Route('/zones', name: 'zones', methods: ['GET'])]
     public function zones(): JsonResponse
     {
         $zones = $this->helper->getZones();
@@ -38,14 +37,12 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Route("/roles", methods={"GET"})
-     *
      * @OA\Response(
      *     response=200,
-     *     description="List of Avaliables Roles, assigne role to user on register",
+     *     description="List of Available Roles",
      * )
      */
-    #[Route('/roles', name: 'roles')]
+    #[Route('/roles', name: 'roles', methods: ['GET'])]
     public function roles(): JsonResponse
     {
         $zones = $this->helper->getRoles();

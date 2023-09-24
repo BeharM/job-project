@@ -5,13 +5,14 @@ namespace App\Controller\Api;
 use App\Entity\User;
 use App\Service\Helper;
 use Doctrine\Persistence\ManagerRegistry;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use OpenApi\Annotations as OA;
+//use OpenApi\Annotations as OA;
 
 class RegistrationController extends AbstractController
 {
@@ -26,8 +27,6 @@ class RegistrationController extends AbstractController
 
     /**
      * Register a new user.
-     *
-     * @Route("/register", name="register")
      *
      * @OA\Post(
      *     summary="Register a new user",

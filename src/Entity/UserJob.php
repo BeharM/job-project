@@ -29,6 +29,9 @@ class UserJob
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $status = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $assessment = null;
+
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $scheduled_at = null;
 
@@ -82,6 +85,18 @@ class UserJob
     public function setStatus(?int $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAssessment(): ?string
+    {
+        return $this->assessment;
+    }
+
+    public function setAssessment(?string $assessment): static
+    {
+        $this->assessment = $assessment;
 
         return $this;
     }

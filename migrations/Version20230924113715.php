@@ -31,7 +31,9 @@ final class Version20230924113715 extends AbstractMigration
         $this->addSql('CREATE TABLE user_jobs (
         id INT AUTO_INCREMENT NOT NULL, 
         user_id INT DEFAULT NULL, 
-        job_id INT DEFAULT NULL, status SMALLINT DEFAULT NULL,
+        job_id INT DEFAULT NULL, 
+        status SMALLINT DEFAULT NULL,
+        assessment LONGTEXT DEFAULT NULL,
         scheduled_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', 
         created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\',
         updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', 

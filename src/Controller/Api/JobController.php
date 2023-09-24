@@ -15,12 +15,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/job', name: 'api_job')]
+#[Route('/api/job', name: 'api_job_')]
 class JobController extends AbstractController
 {
 
     /**
-     * @Route("/lists", methods={"GET"})
      *
      * @OA\Response(
      *     response=200,
@@ -32,7 +31,7 @@ class JobController extends AbstractController
      * )
      * @return JsonResponse
      */
-    #[Route('/lists', name: 'lists')]
+    #[Route('/lists', name: 'lists', methods: ['GET'])]
     public function index(ManagerRegistry $doctrine): JsonResponse
     {
         $em = $doctrine->getManager();
@@ -49,20 +48,21 @@ class JobController extends AbstractController
     /**
      * Show job details.
      *
-     * @Route("/show/{id}", name="show", methods={"GET"})
-     *
      * @OA\Get(
      *     summary="Show job details",
-     *     tags={"JOb Management"},
+     *     tags={"Job Management"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Job ID",
-     *         required=true
+     *         required=true,
+     *         @OA\Schema(
+     *            type="int",
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Job details",
+     *         description="Show Job details",
      *         @Model(type=Job::class)
      *     ),
      *     @OA\Response(
@@ -78,7 +78,7 @@ class JobController extends AbstractController
      * @param int $id
      * @return JsonResponse
      */
-    #[Route('/show/{id}', name: 'show')]
+    #[Route('/show/{id}', name: 'show', methods: ['GET'])]
     public function show(ManagerRegistry $doctrine, $id): JsonResponse
     {
         $em = $doctrine->getManager();
@@ -101,8 +101,6 @@ class JobController extends AbstractController
 
     /**
      * Create a new job.
-     *
-     * @Route("/store", name="store")
      *
      * @OA\Post(
      *     summary="Register a new job",
@@ -185,20 +183,21 @@ class JobController extends AbstractController
     /**
      * Assign user to a company.
      *
-     * @Route("/assign/{id}/assign-to-company", name="assign", methods={"POST"})
-     *
      * @OA\Post(
      *     summary="Assign job to a user",
-     *     tags={"User Management"},
+     *     tags={"Job Management"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Job Id",
-     *         required=true
+     *         required=true,
+     *         @OA\Schema(
+     *            type="int",
+     *        )
      *     ),
      *     @OA\Parameter(
      *         name="scheduled_at",
-     *         in="formData",
+     *         in="path",
      *         description="Assignment timestamp (e.g., 2023/09/25 15:30:00)",
      *         required=true
      *     ),
@@ -295,16 +294,26 @@ class JobController extends AbstractController
     /**
      * Mark a job as completed.
      *
-     * @Route("/completed/{id}", name="completed", methods={"PUT"})
-     *
      * @OA\Put(
      *     summary="Mark a job as completed",
      *     tags={"JOb Management"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Job ID",
-     *         required=true
+     *         description="Job Id",
+     *         required=true,
+     *         @OA\Schema(
+     *            type="int",
+     *        )
+     *     ),
+     *     @OA\Parameter(
+     *         name="assessment",
+     *         in="path",
+     *         description="Job Assessment",
+     *         required=true,
+     *         @OA\Schema(
+     *            type="text",
+     *        )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -322,10 +331,11 @@ class JobController extends AbstractController
      * )
      *
      * @param int $id
+     * @param Request $request
      * @return JsonResponse
      */
     #[IsGranted('ROLE_AUDITOR')]
-    #[Route('/complete/{id}',  name: 'complete', methods: ['POST'])]
+    #[Route('/complete/{id}',  name: 'complete', methods: ['PUT'])]
     public function complete(ManagerRegistry $doctrine, Request $request, $id): JsonResponse
     {
         $em = $doctrine->getManager();
@@ -340,6 +350,7 @@ class JobController extends AbstractController
                     if (!$userJob = $userJobRepository->belongsJobToUser($id, $currentUser->getId())){
                         $error ='Error! Job belongs to another auditor!!!';
                     }else {
+                        $userJob->setAssessment($request->get('assessment'));
                         $userJob->setStatus(1);
                         $userJob->setUpdatedAt(new \DateTimeImmutable('now'));
 
